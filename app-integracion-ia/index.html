@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>M4-S26 · Diagnóstico técnico-económico de integración IA</title>
+  <meta name="description" content="Aplicación para analizar la integración de IA generativa en atención al cliente: cálculos, matriz comparativa, mini-RAID y decisión final.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Diagnóstico técnico-económico de integración IA</h1>
+      <p class="subtitle">Aplicación de análisis para el caso M4-S26 · Atención al cliente B2B</p>
+      <div class="aviso-privacidad" role="note">
+        <strong>⚠ Aviso de privacidad:</strong> No introduzcas datos personales reales, claves API,
+        contraseñas ni información confidencial. Esta aplicación es académica y no almacena datos
+        en ningún servidor: todo se procesa en tu navegador.
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav-secciones" aria-label="Navegación de secciones">
+    <div class="container">
+      <a href="#caso">1. Caso</a>
+      <a href="#datos">2. Datos</a>
+      <a href="#resultados">3. Cálculos</a>
+      <a href="#matriz">4. Matriz</a>
+      <a href="#raid">5. Mini-RAID</a>
+      <a href="#decision">6. Decisión</a>
+      <a href="#resumen">7. Resumen</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- =================== 1. CASO =================== -->
+    <section id="caso">
+      <h2>1. Caso de trabajo</h2>
+      <p>
+        Una empresa mediana de servicios B2B quiere mejorar su atención al cliente usando
+        IA generativa para resumir tickets, sugerir respuestas, buscar información en
+        documentos internos y reducir el tiempo medio de respuesta. La revisión humana
+        es obligatoria y la trazabilidad es alta.
+      </p>
+      <details>
+        <summary>Sistemas y condiciones del caso</summary>
+        <ul>
+          <li>CRM, ERP, Portal de tickets y Base documental interna.</li>
+          <li>Equipo humano de soporte de 35 personas.</li>
+          <li>Datos personales (PII) dentro de algunos tickets.</li>
+          <li>Revisión humana obligatoria antes de enviar respuestas al cliente.</li>
+          <li>Latencia máxima deseada: 4 segundos por respuesta.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>Alternativas a comparar</summary>
+        <ul>
+          <li><strong>Opción A — API externa de IA:</strong> conexión por API con un proveedor externo.
+            Rapidez de implantación frente a coste variable y dependencia.</li>
+          <li><strong>Opción B — Plataforma cloud gestionada:</strong> servicio de IA dentro del proveedor
+            cloud principal. Mejor trazabilidad y permisos frente a complejidad inicial.</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- =================== 2. DATOS =================== -->
+    <section id="datos">
+      <h2>2. Datos de entrada</h2>
+      <p>
+        Introduce los valores del caso. Pulsa <strong>Cargar valores del caso</strong> para precargar
+        los datos de la actividad o introduce los tuyos propios.
+      </p>
+      <form id="form-datos" novalidate>
+        <div class="form-grid">
+          <div class="campo">
+            <label for="ticketsMensuales">Tickets mensuales</label>
+            <input type="number" id="ticketsMensuales" name="ticketsMensuales" min="0" step="1" required>
+            <span class="unidad">tickets/mes</span>
+          </div>
+          <div class="campo">
+            <label for="consultasPorTicket">Consultas IA por ticket</label>
+            <input type="number" id="consultasPorTicket" name="consultasPorTicket" min="0" step="1" required>
+            <span class="unidad">consultas/ticket</span>
+          </div>
+          <div class="campo">
+            <label for="tokensEntrada">Tokens de entrada por consulta</label>
+            <input type="number" id="tokensEntrada" name="tokensEntrada" min="0" step="1" required>
+            <span class="unidad">tokens</span>
+          </div>
+          <div class="campo">
+            <label for="tokensSalida">Tokens de salida por consulta</label>
+            <input type="number" id="tokensSalida" name="tokensSalida" min="0" step="1" required>
+            <span class="unidad">tokens</span>
+          </div>
+          <div class="campo">
+            <label for="tiempoActual">Tiempo humano actual por ticket</label>
+            <input type="number" id="tiempoActual" name="tiempoActual" min="0" step="0.1" required>
+            <span class="unidad">minutos</span>
+          </div>
+          <div class="campo">
+            <label for="tiempoEsperado">Tiempo esperado con IA</label>
+            <input type="number" id="tiempoEsperado" name="tiempoEsperado" min="0" step="0.1" required>
+            <span class="unidad">minutos</span>
+          </div>
+          <div class="campo">
+            <label for="costeHora">Coste hora soporte</label>
+            <input type="number" id="costeHora" name="costeHora" min="0" step="0.01" required>
+            <span class="unidad">€/hora</span>
+          </div>
+          <div class="campo">
+            <label for="usuariosSoporte">Usuarios de soporte</label>
+            <input type="number" id="usuariosSoporte" name="usuariosSoporte" min="0" step="1">
+            <span class="unidad">personas</span>
+          </div>
+        </div>
+        <div id="mensajes-error" class="mensajes-error" role="alert" aria-live="polite"></div>
+        <div class="botones">
+          <button type="button" id="btn-cargar">Cargar valores del caso</button>
+          <button type="button" id="btn-calcular" class="primario">Calcular</button>
+          <button type="button" id="btn-limpiar" class="secundario">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- =================== 3. RESULTADOS =================== -->
+    <section id="resultados">
+      <h2>3. Resultados calculados</h2>
+      <p>Los cálculos se actualizan al pulsar <em>Calcular</em>. Las fórmulas son las del documento teórico.</p>
+      <table class="tabla-resultados" aria-label="Resultados del cálculo">
+        <thead>
+          <tr><th>Concepto</th><th>Fórmula</th><th>Resultado</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Consultas mensuales</td><td>tickets × consultas/ticket</td><td id="rConsultas">—</td></tr>
+          <tr><td>Tokens de entrada al mes</td><td>consultas × tokens entrada</td><td id="rTokensEntrada">—</td></tr>
+          <tr><td>Tokens de salida al mes</td><td>consultas × tokens salida</td><td id="rTokensSalida">—</td></tr>
+          <tr><td>Tiempo ahorrado por ticket</td><td>tiempo actual − tiempo esperado</td><td id="rTiempoTicket">—</td></tr>
+          <tr><td>Minutos ahorrados al mes</td><td>tickets × tiempo ahorrado</td><td id="rMinutos">—</td></tr>
+          <tr><td>Horas ahorradas al mes</td><td>minutos ÷ 60</td><td id="rHoras">—</td></tr>
+          <tr class="destacado"><td>Ahorro humano bruto</td><td>horas × coste hora</td><td id="rAhorro">—</td></tr>
+        </tbody>
+      </table>
+      <p class="aviso">
+        <strong>Importante:</strong> el ahorro es <em>bruto</em>. No incluye coste de IA, revisión,
+        mantenimiento ni formación. No representa precios reales de proveedor.
+      </p>
+    </section>
+
+    <!-- =================== 4. MATRIZ COMPARATIVA =================== -->
+    <section id="matriz">
+      <h2>4. Matriz comparativa</h2>
+      <p>Edita las celdas para registrar tu valoración. Sugerencia de escala: Alto / Medio / Bajo / A revisar.</p>
+      <div class="tabla-scroll">
+        <table id="tabla-matriz" class="tabla-editable">
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>Opción A · API externa</th>
+              <th>Opción B · Cloud gestionado</th>
+              <th>Opción mejor</th>
+              <th>Motivo breve</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- filas insertadas por JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- =================== 5. MINI-RAID =================== -->
+    <section id="raid">
+      <h2>5. Mini-RAID</h2>
+      <p>Riesgos, Supuestos, Incidencias y Dependencias. Edita cada celda con tu análisis.</p>
+      <div class="tabla-scroll">
+        <table id="tabla-raid" class="tabla-editable">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Pregunta guía</th>
+              <th>Elemento identificado</th>
+              <th>Impacto (Alto/Medio/Bajo)</th>
+              <th>Acción propuesta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- filas insertadas por JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- =================== 6. DECISIÓN FINAL =================== -->
+    <section id="decision">
+      <h2>6. Decisión final</h2>
+      <div class="form-grid form-decision">
+        <div class="campo campo-ancho">
+          <label for="dRecomendacion">Recomiendo la opción</label>
+          <select id="dRecomendacion">
+            <option value="">— elegir —</option>
+            <option value="A">Opción A · API externa de IA</option>
+            <option value="B">Opción B · Plataforma cloud gestionada</option>
+          </select>
+        </div>
+        <div class="campo campo-ancho">
+          <label for="dMotivo">Motivo principal</label>
+          <textarea id="dMotivo" rows="2" placeholder="¿Por qué la eliges? Conecta con criterios de la matriz."></textarea>
+        </div>
+        <div class="campo campo-ancho">
+          <label for="dRiesgo">Riesgo principal</label>
+          <textarea id="dRiesgo" rows="2" placeholder="¿Cuál es el mayor riesgo asociado a tu elección?"></textarea>
+        </div>
+        <div class="campo campo-ancho">
+          <label for="dControl">Control propuesto</label>
+          <textarea id="dControl" rows="2" placeholder="¿Cómo mitigarías ese riesgo? (revisión humana, logs, masking PII, etc.)"></textarea>
+        </div>
+        <div class="campo campo-ancho">
+          <label for="dMetrica">Métrica de éxito</label>
+          <textarea id="dMetrica" rows="2" placeholder="¿Qué medirás para saber si el piloto merece escalar?"></textarea>
+        </div>
+        <div class="campo campo-ancho">
+          <label for="dTradeoff">Consecuencia negativa aceptada (trade-off)</label>
+          <textarea id="dTradeoff" rows="2" placeholder="¿Qué desventaja aceptas a cambio de los beneficios?"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== 7. RESUMEN =================== -->
+    <section id="resumen">
+      <h2>7. Resumen para entrega</h2>
+      <p>Genera el resumen y cópialo en tu plantilla de entrega.</p>
+      <div class="botones">
+        <button type="button" id="btn-generar">Generar resumen</button>
+        <button type="button" id="btn-copiar" class="primario">Copiar resumen</button>
+        <button type="button" id="btn-descargar" class="secundario">Descargar como .txt</button>
+      </div>
+      <textarea id="resumen-texto" rows="22" placeholder="Pulsa 'Generar resumen' para componer el texto a partir de tus datos, matriz, mini-RAID y decisión."></textarea>
+      <div id="aviso-copia" class="aviso-copia" aria-live="polite"></div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        M4-S26 · Diseño de Sistemas de Información ·
+        Aplicación académica · No usar datos personales reales.
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
